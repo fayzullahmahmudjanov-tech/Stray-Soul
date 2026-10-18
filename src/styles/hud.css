@@ -1,0 +1,266 @@
+/* In-Game HUD Styles */
+
+.hud-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 12;
+  transition: opacity 0.5s ease;
+}
+
+/* Subtle Center Reticle */
+.reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+  transition: transform 0.2s ease, background 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+
+.reticle.highlight {
+  width: 10px;
+  height: 10px;
+  background: var(--color-amber);
+  box-shadow: 0 0 10px var(--color-amber-glow);
+}
+
+/* Lantern Indicator */
+.lantern-indicator {
+  position: absolute;
+  bottom: 28px;
+  left: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(10, 15, 22, 0.7);
+  border: 1px solid rgba(230, 157, 69, 0.25);
+  border-radius: 24px;
+  padding: 8px 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lantern-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lantern-core {
+  fill: var(--color-amber);
+  filter: drop-shadow(0 0 4px var(--color-gold));
+  transition: transform 0.3s ease;
+}
+
+.lantern-bar-wrapper {
+  width: 70px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.lantern-focus-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-amber), var(--color-gold));
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.lantern-hint {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--color-text-dim);
+}
+
+/* Contextual Interaction Prompt */
+.interaction-prompt {
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(14, 21, 32, 0.88);
+  border: 1px solid var(--color-amber);
+  border-radius: 20px;
+  padding: 8px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(230, 157, 69, 0.35);
+  animation: promptFloat 2s ease-in-out infinite;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.prompt-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: var(--color-amber);
+  color: #0d131a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.prompt-text {
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+}
+
+@keyframes promptFloat {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
+}
+
+/* Sneak Indicator */
+.crouch-indicator {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  color: var(--color-text-dim);
+  background: rgba(10, 15, 22, 0.65);
+  border: 1px solid rgba(80, 100, 120, 0.2);
+  padding: 6px 14px;
+  border-radius: 12px;
+}
+
+.stealth-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+  animation: pulse 1.5s infinite;
+}
+
+/* Story Notification */
+.story-notification {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-notification.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(10px);
+}
+
+.story-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  letter-spacing: 0.3em;
+  color: #fff;
+  text-shadow: 0 0 25px rgba(230, 157, 69, 0.45);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.story-subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--color-gold);
+}
+
+/* Whisper / Dialogue Box */
+.whisper-box {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px;
+  width: 85%;
+  text-align: center;
+  background: rgba(8, 12, 18, 0.85);
+  border: 1px solid rgba(230, 157, 69, 0.3);
+  border-radius: 6px;
+  padding: 16px 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.4s ease;
+}
+
+.whisper-text {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: #f0f4f8;
+  font-style: italic;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Objective Tracker */
+.objective-tracker {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  text-align: right;
+  max-width: 320px;
+  background: rgba(10, 15, 22, 0.6);
+  border-right: 2px solid var(--color-amber);
+  padding: 8px 14px;
+  border-radius: 4px 0 0 4px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: opacity 0.5s ease;
+}
+
+.objective-header {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--color-amber);
+  margin-bottom: 3px;
+  font-weight: 600;
+}
+
+.objective-text {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  color: #d1dbe6;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+/* Controls Hint */
+.hud-controls-hint {
+  position: absolute;
+  bottom: 14px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: rgba(180, 195, 215, 0.45);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}

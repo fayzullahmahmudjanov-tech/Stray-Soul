@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>THE STRAY SOUL — A Journey to Somewhere</title>
+    <meta name="description" content="A cinematic 3D atmospheric adventure of a small lost soul traveling through vast forgotten ruins while shadowed by Miraj." />
+    <!-- Cinematic Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+    <link rel="stylesheet" href="/src/styles/menus.css" />
+    <link rel="stylesheet" href="/src/styles/hud.css" />
+  </head>
+  <body class="loading">
+    <div id="game-container">
+      <!-- 3D Canvas will be injected here -->
+      <canvas id="webgl-canvas"></canvas>
+
+      <!-- Atmospheric Overlays -->
+      <div id="cinematic-bars" class="cinematic-bars">
+        <div class="bar bar-top"></div>
+        <div class="bar bar-bottom"></div>
+      </div>
+      <div id="vignette-overlay" class="vignette-overlay"></div>
+      <div id="danger-vignette" class="danger-vignette"></div>
+      <div id="screen-fade" class="screen-fade"></div>
+
+      <!-- In-Game HUD -->
+      <div id="hud-container" class="hud-container hidden">
+        <div id="reticle" class="reticle"></div>
+
+        <!-- Lantern Indicator -->
+        <div id="lantern-indicator" class="lantern-indicator" title="Lantern Focus [F]">
+          <div class="lantern-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 2v2M9 4h6l2 4H7l2-4zm-2 4h10l-1.5 9h-7L7 8zm2 9h6v3H9v-3z" />
+              <circle cx="12" cy="12" r="2.5" class="lantern-core" />
+            </svg>
+          </div>
+          <div class="lantern-bar-wrapper">
+            <div id="lantern-focus-bar" class="lantern-focus-bar"></div>
+          </div>
+          <span class="lantern-hint">[F] Focus</span>
+        </div>
+
+        <!-- Contextual Interaction Prompt -->
+        <div id="interaction-prompt" class="interaction-prompt hidden">
+          <span class="prompt-key" id="prompt-key">E</span>
+          <span class="prompt-text" id="prompt-text">Interact</span>
+        </div>
+
+        <!-- Sneak Indicator -->
+        <div id="crouch-indicator" class="crouch-indicator hidden">
+          <span class="stealth-dot"></span>
+          <span>SNEAKING</span>
+        </div>
+
+        <!-- Region & Story Notification -->
+        <div id="story-notification" class="story-notification">
+          <div id="story-title" class="story-title"></div>
+          <div id="story-subtitle" class="story-subtitle"></div>
+        </div>
+
+        <!-- Whisper / Dialogue Subtitle -->
+        <div id="whisper-box" class="whisper-box hidden">
+          <p id="whisper-text" class="whisper-text"></p>
+        </div>
+
+        <!-- Objective Tracker -->
+        <div id="objective-tracker" class="objective-tracker">
+          <div class="objective-header">CURRENT PURPOSE</div>
+          <div id="objective-text" class="objective-text">Seek the faint light beyond the mist.</div>
+        </div>
+
+        <!-- Quick Controls Helper -->
+        <div id="hud-controls-hint" class="hud-controls-hint">
+          <span>[WASD] Move</span>
+          <span>[Space] Jump</span>
+          <span>[Shift] Run</span>
+          <span>[C] Crouch</span>
+          <span>[E] Interact</span>
+          <span>[F] Lantern</span>
+          <span>[Tab] Journal</span>
+          <span>[Esc] Pause</span>
+        </div>
+      </div>
+
+      <!-- Main Menu -->
+      <div id="main-menu" class="menu-screen active">
+        <div class="menu-backdrop"></div>
+        <div class="menu-content">
+          <div class="title-group">
+            <h1 class="game-title">THE STRAY SOUL</h1>
+            <p class="game-subtitle">A JOURNEY TO SOMEWHERE</p>
+            <div class="title-accent-line"></div>
+          </div>
+
+          <div class="menu-nav">
+            <button id="btn-continue" class="menu-btn primary disabled">
+              <span class="btn-glow"></span>
+              <span class="btn-text">CONTINUE</span>
+            </button>
+            <button id="btn-new-game" class="menu-btn primary">
+              <span class="btn-glow"></span>
+              <span class="btn-text">NEW JOURNEY</span>
+            </button>
+            <button id="btn-chapter-select" class="menu-btn">
+              <span class="btn-glow"></span>
+              <span class="btn-text">CHAPTERS</span>
+            </button>
+            <button id="btn-memories" class="menu-btn">
+              <span class="btn-glow"></span>
+              <span class="btn-text">ECHO JOURNAL</span>
+            </button>
+            <button id="btn-settings" class="menu-btn">
+              <span class="btn-glow"></span>
+              <span class="btn-text">SETTINGS</span>
+            </button>
+            <button id="btn-credits" class="menu-btn">
+              <span class="btn-glow"></span>
+              <span class="btn-text">CREDITS</span>
+            </button>
+          </div>
+
+          <div class="menu-footer">
+            <span class="build-ver">A 3D Cinematic Adventure &bull; Use Keyboard &amp; Mouse</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Menu -->
+      <div id="pause-menu" class="menu-screen hidden">
+        <div class="menu-backdrop blurred"></div>
+        <div class="menu-content">
+          <div class="title-group small">
+            <h2 class="menu-heading">JOURNEY PAUSED</h2>
+            <div class="title-accent-line"></div>
+          </div>
+          <div class="menu-nav">
+            <button id="btn-pause-resume" class="menu-btn primary">
+              <span class="btn-text">RESUME</span>
+            </button>
+            <button id="btn-pause-checkpoint" class="menu-btn">
+              <span class="btn-text">RESTART FROM ANCHOR</span>
+            </button>
+            <button id="btn-pause-journal" class="menu-btn">
+              <span class="btn-text">ECHO JOURNAL</span>
+            </button>
+            <button id="btn-pause-settings" class="menu-btn">
+              <span class="btn-text">SETTINGS</span>
+            </button>
+            <button id="btn-pause-menu" class="menu-btn danger">
+              <span class="btn-text">RETURN TO TITLE</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter Select Modal -->
+      <div id="chapter-select-menu" class="menu-modal hidden">
+        <div class="modal-card wide">
+          <div class="modal-header">
+            <h2>WORLD CHAPTERS</h2>
+            <p>Select any unlocked region to explore or replay without losing campaign records.</p>
+            <button class="modal-close-btn" id="btn-close-chapters">&times;</button>
+          </div>
+          <div id="chapter-cards-grid" class="chapter-cards-grid">
+            <!-- Rendered by ChapterSelect.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Echo Journal Modal -->
+      <div id="memory-journal-menu" class="menu-modal hidden">
+        <div class="modal-card wide journal-card">
+          <div class="modal-header">
+            <h2>ECHO JOURNAL</h2>
+            <p>Fragments of an forgotten life. Each relic whispers of belonging, not saving the world.</p>
+            <button class="modal-close-btn" id="btn-close-journal">&times;</button>
+          </div>
+          <div class="journal-layout">
+            <div id="journal-list" class="journal-list">
+              <!-- Rendered by MemoryJournal.js -->
+            </div>
+            <div id="journal-detail" class="journal-detail">
+              <div class="journal-detail-empty">Select an uncovered echo to inspect its memory.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Modal -->
+      <div id="settings-menu" class="menu-modal hidden">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>SETTINGS</h2>
+            <p>Adjust visual performance and audio balance</p>
+            <button class="modal-close-btn" id="btn-close-settings">&times;</button>
+          </div>
+          <div class="settings-form">
+            <div class="setting-row">
+              <label for="setting-master-vol">Master Volume</label>
+              <input type="range" id="setting-master-vol" min="0" max="1" step="0.05" value="0.8" />
+              <span id="label-master-vol" class="vol-label">80%</span>
+            </div>
+            <div class="setting-row">
+              <label for="setting-music-vol">Atmospheric Music</label>
+              <input type="range" id="setting-music-vol" min="0" max="1" step="0.05" value="0.75" />
+              <span id="label-music-vol" class="vol-label">75%</span>
+            </div>
+            <div class="setting-row">
+              <label for="setting-sfx-vol">Sound Effects &amp; Ambience</label>
+              <input type="range" id="setting-sfx-vol" min="0" max="1" step="0.05" value="0.85" />
+              <span id="label-sfx-vol" class="vol-label">85%</span>
+            </div>
+            <div class="setting-row">
+              <label for="setting-mouse-sens">Look Sensitivity</label>
+              <input type="range" id="setting-mouse-sens" min="0.2" max="2.5" step="0.1" value="1.0" />
+              <span id="label-mouse-sens" class="vol-label">1.0x</span>
+            </div>
+            <div class="setting-row">
+              <label for="setting-graphics">Visual Quality</label>
+              <select id="setting-graphics">
+                <option value="high" selected>High (Soft Shadows, Fog, Shaders)</option>
+                <option value="medium">Medium (Standard Shadows, Fog)</option>
+                <option value="low">Low (Fast Performance, Crisp)</option>
+              </select>
+            </div>
+            <div class="setting-row toggle-row">
+              <label for="setting-camera-shake">Camera Shake Effects</label>
+              <input type="checkbox" id="setting-camera-shake" checked />
+            </div>
+            <div class="setting-row toggle-row">
+              <label for="setting-invert-y">Invert Look Y</label>
+              <input type="checkbox" id="setting-invert-y" />
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button id="btn-reset-save" class="menu-btn danger small">Reset Save Data</button>
+            <button id="btn-save-settings" class="menu-btn primary small">Apply &amp; Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credits Modal -->
+      <div id="credits-menu" class="menu-modal hidden">
+        <div class="modal-card credits-card">
+          <div class="modal-header">
+            <h2>THE STRAY SOUL</h2>
+            <p>A Journey to Somewhere</p>
+            <button class="modal-close-btn" id="btn-close-credits">&times;</button>
+          </div>
+          <div class="credits-body">
+            <p class="credits-quote">"The world existed before the soul arrived. Its history, structures, and silence are independent of you. You are a traveler seeking where you belong."</p>
+            <div class="credits-columns">
+              <div class="credit-block">
+                <h4>Design &amp; Direction</h4>
+                <p>Antigravity Studios</p>
+              </div>
+              <div class="credit-block">
+                <h4>3D Engine &amp; Visuals</h4>
+                <p>Three.js &amp; Custom Procedural Shaders</p>
+              </div>
+              <div class="credit-block">
+                <h4>Atmospheric Soundscapes</h4>
+                <p>Synthesized Procedural Audio Engine</p>
+              </div>
+              <div class="credit-block">
+                <h4>Platform</h4>
+                <p>HTML5 &bull; Vanilla JS &bull; Vite</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Death & Respawn Screen -->
+      <div id="death-screen" class="death-screen hidden">
+        <div class="death-content">
+          <h2 class="death-title">LOST IN THE SHADOWS</h2>
+          <p class="death-desc">Miraj whispered: <em>"You can stop now... there is nothing waiting for you."</em></p>
+          <div class="death-actions">
+            <button id="btn-respawn" class="menu-btn primary">
+              <span class="btn-text">REAWAKEN AT ANCHOR</span>
+            </button>
+            <button id="btn-death-menu" class="menu-btn">
+              <span class="btn-text">RETURN TO TITLE</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation Dialog -->
+      <div id="confirm-dialog" class="confirm-dialog hidden">
+        <div class="confirm-card">
+          <h3 id="confirm-title">Are you sure?</h3>
+          <p id="confirm-message">This action cannot be undone.</p>
+          <div class="confirm-actions">
+            <button id="btn-confirm-cancel" class="menu-btn small">Cancel</button>
+            <button id="btn-confirm-ok" class="menu-btn danger small">Confirm</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ending Screen -->
+      <div id="ending-screen" class="ending-screen hidden">
+        <div class="ending-content">
+          <h1 class="ending-title">THE PLACE WHERE YOU BELONG</h1>
+          <div class="title-accent-line"></div>
+          <p class="ending-text" id="ending-narrative">
+            The world did not change. The ruins still slumber beneath the clouds, the ancient trains rest quietly on their tracks, and the wind continues its timeless song across the stone arches.<br><br>
+            You did not conquer Miraj. You did not save an empire.<br><br>
+            You simply kept walking until you remembered who you are: a gentle ember finding its hearth in the quiet twilight.<br><br>
+            You are home.
+          </p>
+          <div class="ending-stats" id="ending-stats"></div>
+          <div class="ending-actions">
+            <button id="btn-ending-replay" class="menu-btn primary">REPLAY FINAL CHAPTER</button>
+            <button id="btn-ending-menu" class="menu-btn">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Module Script -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
